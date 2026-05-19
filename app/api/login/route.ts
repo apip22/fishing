@@ -81,6 +81,22 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error(error);
 
+    const message =
+      error instanceof Error ? error.message : "Server error.";
+
+    // Provide clearer response when database is not configured.
+    if (message.includes("Missing DATABASE_URL")) {
+      return NextResponse.json(
+        {
+          message:
+            "Server misconfigured: DATABASE_URL is not set in deployment environment.",
+        },
+        {
+          status: 500,
+        },
+      );
+    }
+
     return NextResponse.json(
       {
         message: "Server error.",
