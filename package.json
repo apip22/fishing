@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postinstall": "next build",
+    "postinstall": "npx prisma migrate deploy --schema=./prisma/schema.prisma && next build",
     "start": "next start",
     "seed": "node --experimental-strip-types prisma/seed.ts",
     "lint": "eslint"
