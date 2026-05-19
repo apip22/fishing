@@ -21,21 +21,16 @@ function missingDbProxy() {
   return new Proxy(() => {}, handler) as unknown as PrismaClient;
 }
 
-let prisma: PrismaClient;
+let _prisma: PrismaClient | any;
 
 if (process.env.NODE_ENV === "production" && !process.env.DATABASE_URL) {
-  // In production without DATABASE_URL, use a proxy that throws a clear error
-  // when any prisma operation is attempted. This yields a clearer runtime
-  // message instead of obscure stack traces.
-  prisma = missingDbProxy();
+  _prisma = missingDbProxy();
 } else {
-  prisma =
-    globalForPrisma.prisma ??
-    new PrismaClient();
+  _prisma = globalForPrisma.prisma ?? new PrismaClient();
 
   if (process.env.NODE_ENV !== "production") {
-    globalForPrisma.prisma = prisma;
+    globalForPrisma.prisma = _prisma;
   }
 }
 
-export { prisma };
+export const prisma: PrismaClient = _prisma as PrismaClient;
